@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -145,6 +146,14 @@ public class IdentityDbDAO implements IdentityDAO {
 		return result;
 	}
 
+	/**
+	 * Interface for identity query
+	 * 
+	 * @param attrVals
+	 *            Contains attrName to value pairs which serve as search
+	 *            criteria
+	 * @return
+	 */
 	public List<Identity> getIdentity(Map<String, String> attrVals) {
 		ArrayList<Identity> result = new ArrayList<>();
 		PreparedStatement preStat = null;
@@ -187,6 +196,33 @@ public class IdentityDbDAO implements IdentityDAO {
 		}
 
 		return result;
+	}
+
+	public Map<String, String> getExtraInfo(String uid) {
+		Map<String, String> extraInfos = new HashMap<>();
+
+		PreparedStatement preStat = null;
+		try {
+			String strSql = "SELECT * FROM t_extraInfo WHERE uid = ?";
+			preStat = connection.prepareStatement(strSql);
+			preStat.setString(1, uid);
+			// get the list of result, then convert it into Identity
+			ArrayList<List<Object>> list = (ArrayList<List<Object>>) dbManager.executeQuery(preStat);
+			for (List<Object> infos : list) {
+				extraInfos.put(infos.get(1).toString(), infos.get(2).toString());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (preStat != null)
+					preStat.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return extraInfos;
 	}
 
 	@Override
@@ -241,7 +277,7 @@ public class IdentityDbDAO implements IdentityDAO {
 	}
 
 	@Override
-	public boolean addAttribute(String attrName) {
+	public boolean addTableField(String attrName) {
 		// TODO Auto-generated method stub
 		String sql = "ALTER TABLE t_identity ADD ? varchar(30) DEFAULT ''";
 		Statement stat = null;
@@ -265,7 +301,7 @@ public class IdentityDbDAO implements IdentityDAO {
 		return true;
 	}
 
-	public boolean deleteAttribute(String attrName) {
+	public boolean deleteTableField(String attrName) {
 		// TODO Auto-generated method stub
 		String sql = "ALTER TABLE t_identity DROP ?";
 		Statement stat = null;
@@ -286,7 +322,58 @@ public class IdentityDbDAO implements IdentityDAO {
 					e.printStackTrace();
 				}
 		}
-		return false;
+		return true;
 	}
 
+	@Override
+	public boolean addIdAttr(String uid, String attrName, String attrVal) {
+		String sql = "INSERT INTO t_extraInfo VALUES (?,?,?)";
+		PreparedStatement stat = null;
+
+		try {
+			stat = connection.prepareStatement(sql);
+			stat.setInt(1, Integer.parseInt(uid));
+			stat.setString(2, attrName);
+			stat.setString(3, attrVal);
+			stat.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (stat != null)
+				try {
+					stat.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean deleteIdAttr(String id, String attrName) {
+		String sql = "DELETE FROM t_extraInfo WHERE uid=? and attrName=?";
+		PreparedStatement stat = null;
+
+		try {
+			stat = connection.prepareStatement(sql);
+			stat.setInt(1, Integer.parseInt(id));
+			stat.setString(2, attrName);
+			stat.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (stat != null)
+				try {
+					stat.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+		return true;
+
+	}
 }
