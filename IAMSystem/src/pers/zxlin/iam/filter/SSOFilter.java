@@ -5,6 +5,7 @@ package pers.zxlin.iam.filter;
 
 import java.io.IOException;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -17,30 +18,36 @@ import javax.servlet.http.HttpServletResponse;
  * @author BoJack
  *
  */
-public class SessionCheckFilter implements javax.servlet.Filter {
+public class SSOFilter implements Filter {
 	private String contextPath;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 */
 	@Override
-	public void init(FilterConfig fc) throws ServletException {
-		contextPath = fc.getServletContext().getContextPath();
+	public void init(FilterConfig filterConfig) throws ServletException {
+		// TODO Auto-generated method stub
+		contextPath = filterConfig.getServletContext().getContextPath();
+
+		Filter.super.init(filterConfig);
 	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		// TODO Auto-generated method stub
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		if (req.getSession().getAttribute("LOGIN_USER") == null) {
-			res.sendRedirect(contextPath + "/login.jsp");
-		} else {
-			String userType = (String) req.getSession().getAttribute("LOGIN_USER");
-			// invoke doFilter will pass current request along the chain till
-			// the target url
+		Object secret = req.getSession().getAttribute("LOGIN_USER");
+		if (secret == null || !secret.toString().equals("ADMIN"))
 			chain.doFilter(request, response);
-			if (!userType.equals("ADMIN")) {
-				res.sendRedirect(contextPath + "/login.jsp");
-			}
+		else {
+			res.sendRedirect(contextPath + "/main.jsp");
 		}
+
 	}
 
 }

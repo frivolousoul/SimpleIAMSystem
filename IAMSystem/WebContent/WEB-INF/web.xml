@@ -9,21 +9,70 @@
     <filter-name>SessionCheckFilter</filter-name>
     <filter-class>pers.zxlin.iam.filter.SessionCheckFilter</filter-class>
   </filter>
+  
   <filter-mapping>
     <filter-name>SessionCheckFilter</filter-name>
-    <!--url-pattern>/*</url-pattern-->
-    <url-pattern>/main.html</url-pattern> <!-- url from where you implement the filtering -->
+    <url-pattern>/main.jsp</url-pattern> 
+  </filter-mapping>
+  
+  <filter>
+    <filter-name>SSOFilter</filter-name>
+    <filter-class>pers.zxlin.iam.filter.SSOFilter</filter-class>
+  </filter>
+  
+  <filter-mapping>
+    <filter-name>SSOFilter</filter-name>
+    <url-pattern>/login.jsp</url-pattern>
   </filter-mapping>
   
   <session-config>  
-    <session-timeout>1</session-timeout>  
+    <session-timeout>5</session-timeout>  
   </session-config>
+  
   <servlet>
-  	<servlet-name>Modifier</servlet-name>
-  	<servlet-class>pers.zxlin.iam.servlet.Modifier</servlet-class>
+  	<servlet-name>Modify</servlet-name>
+  	<servlet-class>pers.zxlin.iam.servlet.Modify</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>Modify</servlet-name>
+  	<url-pattern>/servModify</url-pattern>
+  </servlet-mapping>
+  <servlet>
+  	<servlet-name>Create</servlet-name>
+  	<servlet-class>pers.zxlin.iam.servlet.Create</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>Modifier</servlet-name>
-  	<url-pattern>/servModifier</url-pattern>
+  	<servlet-name>Create</servlet-name>
+  	<url-pattern>/servCreate</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>Login</servlet-name>
+  	<servlet-class>pers.zxlin.iam.servlet.Login</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>Login</servlet-name>
+  	<url-pattern>/servLogin</url-pattern>
+  </servlet-mapping>
+  
+   <servlet>
+  	<servlet-name>Search</servlet-name>
+  	<servlet-class>pers.zxlin.iam.servlet.Search</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>Search</servlet-name>
+  	<url-pattern>/servSearch</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>AlterIdTable</servlet-name>
+  	<servlet-class>pers.zxlin.iam.servlet.AlterIdTable</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>AlterIdTable</servlet-name>
+  	<url-pattern>/servAlterIdTable</url-pattern>
+  </servlet-mapping>
+  
+  
 </web-app>

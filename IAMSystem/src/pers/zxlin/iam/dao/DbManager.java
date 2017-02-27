@@ -59,7 +59,6 @@ public class DbManager {
 			stat = connection.createStatement();
 			resultSet = stat.executeQuery(sql);
 			metaData = resultSet.getMetaData();
-
 			int numberOfColumns = metaData.getColumnCount();
 			columnNames = new String[numberOfColumns];
 

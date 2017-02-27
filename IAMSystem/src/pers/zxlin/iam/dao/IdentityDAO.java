@@ -60,5 +60,9 @@ public interface IdentityDAO {
 	 */
 	public boolean update(String uid, String attr, String val);
 
-	public boolean addAttribute(String fieldName);
+	public boolean addTableField(String fieldName);
+
+	public boolean addIdAttr(String id, String attrName, String attrVal);
+
+	public boolean deleteIdAttr(String id, String attrName);
 }
