@@ -4,10 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The entity class to store personal info
+ * The entity class to persist identity information
  * 
  * @author BoJack
- *
  */
 public class Identity {
 

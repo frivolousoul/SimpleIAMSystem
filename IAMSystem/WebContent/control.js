@@ -2,42 +2,52 @@
  * 
  */
 
-
 function openWindow() {
-	window
-			.open(
-					"about:blank",
-					"_modification",
-					"height=600, width=900, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=yes");
-	var i = document.getElementById("selectedItem").value;
-	document.getElementById("id_form_"+i).submit();
+	var x = 
+		window
+		.open(
+				"about:blank",
+				"_modification",
+		"height=600, width=900, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=yes");
+	document.getElementById("id_form").submit();
+	return x;
+}
+
+function closeWindow(){
+	window.opener=null;
+	window.open('','_self');
+	window.close();
 }
 
 function selectItem(i){
 	document.getElementById("selectedItem").value=i;
-	var radioGroup = document.getElementsByName("idSelected");
-	for(var j=0; j<radioGroup.length;j++){
-		if(radioGroup[j].checked && j!=i-1)
-			radioGroup[j].checked=false;
-	}
-	
 }
 
-function setItemValue(opcode){
+function setOpcode(opcode){
 	document.getElementById("opcode").value=opcode;
-	if(opcode=="0"){
-		var x = document.getElementsByName("newAttr")[0];
-		var y = document.getElementsByName("newVal")[0];
-		var attrName = x.value;
-		x.name = x.value;
-		x.value = y.value;
-		y.value = attrName;
-	}
+}
+
+function modifyAttr(opcode){
+	setOpcode(opcode);
 	document.getElementById("form_modify").submit();
 }
 
+function addTableField(opcode){
+	setOpcode(opcode);
+}
+
+function delTableField(clickedName){
+	var result = confirm("Sure to delete the attribute?");
+	if(result){
+		var deletedAttr = document.getElementById("deleted")
+		deletedAttr.value = clickedName;
+		document.getElementById("form_delTableField").submit();
+	}
+}
+
+
 function setElementAttr(name,attr,val){
-	
+
 	document.getElementsByName(name)[0].setAttribute(attr, val);
 
 }

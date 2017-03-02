@@ -4,107 +4,93 @@
 <%@page import="java.util.Enumeration"%>
 
 <%@page import="pers.zxlin.iam.service.IdManager"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"
-%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%!IdManager idManager = new IdManager();
 	String[][] infos;
 	String[] attrNames;%>
 
 <%
-	Map<String, String> mapAttr = new HashMap<>();
-	Enumeration<String> enumPara = request.getParameterNames();
-	String attr;
-	String val;
 	attrNames = idManager.getLatestIdAttr();
-	if (enumPara.hasMoreElements()) {
-		while (enumPara.hasMoreElements()) {
-			attr = enumPara.nextElement();
-			val = request.getParameter(attr);
-			if (!val.equals(""))
-				mapAttr.put(attr, val);
-		}
-		infos = idManager.searchByAttr(mapAttr);
-	} else
+	Object obj = request.getAttribute("infos");
+	if (obj != null)
+		infos = (String[][]) obj;
+	else
 		infos = idManager.searchByAttr("1", "1");
 %>
 
 <html>
 <head>
-<script type="text/javascript" src="control.js?ver=1"></script>
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/search.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="control.js?ver=3"></script>
+
+<title>Search For Identity</title>
 
 </head>
 <body>
-	<h2>Search criteria</h2>
-
-	<form action="search.jsp" method="POST">
-		<table>
-			<%
-				for (int i = 0; i < attrNames.length; i++) {
-			%>
-			<tr>
-				<div class='form-group'>
-					<td><label for=<%=attrNames[i]%>> <%=attrNames[i]%></label></td>
-					<td><input class="form-control" name=<%=attrNames[i]%>
-						placeholder=<%=attrNames[i]%> value=""
-					></td>
-				</div>
-			</tr>
-			<%
-				}
-			%>
-		</table>
-		<input type="submit" value="Search" />
-	</form>
 
 
 
-	<input type="hidden" id="selectedItem" value="" />
-	<table>
+	<div class="table-responsive main-content">
+		<form action='servModify' method='POST' id='id_form' target='_modification'>
+			<input type="hidden" name="opcode" value="-1" />
+			<input type="hidden" name="selectedId" id="selectedItem" value="" />
+		</form>
+		<form action="servAlterIdTable" method="post" id="form_delTableField">
+			<input type="hidden" id="opcode" name="opcode" value="1">
+			<input type="hidden" id="deleted" name="deletedFieldName" value="">
+		</form>
+		<table class="table table-striped table-bordered table-hover">
+			<thead>
 				<tr>
-					<th> Selection </th>
+					<th>#</th>
 					<%
-						for (int i = 0; i < attrNames.length; i++){
+						for (int i = 0; i < attrNames.length; i++) {
 					%>
-						<th> <%=attrNames[i]%> </th>
+					<th id="<%=attrNames[i]%>" onclick="delTableField(this.id)">
+						<%=attrNames[i]%>
+					</th>
+					<%
+						}
+					%>
+				</tr>
+			</thead>
+
+			<tbody>
+				<%
+					for (int i = 0; i < infos.length; i++) {
+						String[] curId = infos[i];
+				%>
+
+				<tr>
+					<td>
+						<input name="idSelected" type="radio" onclick="selectItem('<%=(curId[0])%>')" value="" />
+					</td>
+					<%
+						for (int j = 0; j < curId.length; j++) {
+					%>
+					<td><%=curId[j]%></td>
 					<%
 						}
 					%>
 				</tr>
 
 				<%
-					for (int i = 0; i < infos.length; i++) {
-				%>
-				<form action='modify.jsp' method='POST' id='id_form_<%=(i + 1)%>'
-					target='_modification'
-				>
-					<tr>
-						<td><input name='idSelected' type='radio'
-							onclick='selectItem(<%=(i + 1)%>)'
-							value=""
-						/></td>
-						<%
-							String[] curId = infos[i];
-								for (int j = 0; j < curId.length; j++) {
-						%>
-							<td><%=curId[j]%></td>
-							<input type='hidden' name=<%=attrNames[j]%> value=<%=curId[j]%> />
-						<%
-							}
-						%>
-					</tr>
-					
-				</form>
-				<%
 					}
 				%>
-	</table>
-
-	<input type="button" value="Modify" onclick="openWindow()" />
+			</tbody>
+		</table>
+	</div>
 
 </body>
+
+
+
 </html>
