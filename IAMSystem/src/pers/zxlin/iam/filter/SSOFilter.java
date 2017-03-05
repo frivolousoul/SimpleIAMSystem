@@ -5,6 +5,7 @@ package pers.zxlin.iam.filter;
 
 import java.io.IOException;
 
+import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -14,36 +15,33 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This filter class prevents the invalid request to home page
- * 
  * @author BoJack
  */
-public class SessionCheckFilter implements javax.servlet.Filter {
+public class SSOFilter implements Filter {
 	private String contextPath;
 
 	@Override
-	public void init(FilterConfig fc) throws ServletException {
-		contextPath = fc.getServletContext().getContextPath();
+	public void init(FilterConfig filterConfig) throws ServletException {
+		contextPath = filterConfig.getServletContext().getContextPath();
+
+		Filter.super.init(filterConfig);
 	}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		// TODO Auto-generated method stub
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
-		// invalid request
-		if (req.getSession().getAttribute("LOGIN_USER") == null) {
-			res.sendRedirect(contextPath + "/login.jsp");
-		}
-		else {
-			// invalid request
-			String userType = (String) req.getSession().getAttribute("LOGIN_USER");
-			// Pass current request to the next filter till the target url
+		Object secret = req.getSession().getAttribute("LOGIN_USER");
+		// check the secret
+		if (secret == null || !secret.toString().equals("ADMIN"))
+			// no need to login again
 			chain.doFilter(request, response);
-			if (!userType.equals("ADMIN")) {
-				res.sendRedirect(contextPath + "/login.jsp");
-			}
+		else {
+			res.sendRedirect(contextPath + "/main.jsp");
 		}
+
 	}
 
 }
