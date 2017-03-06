@@ -32,10 +32,10 @@ div#main-content {
 			String msg;
 			if (attrObject != null) {
 				msg = attrObject.toString();%>
-		alert("<%=msg%>
-	");
-<%request.removeAttribute("msg");
-			}%>
+		alert("<%=msg%>");
+
+<%		request.removeAttribute("msg");
+	}%>
 	
 </script>
 
